@@ -271,7 +271,7 @@ class ServerCommandsTestCase(TornadoTestCase):
         self.client.lpush('bar', 'cd', self.expect(True))
         self.client.lrange('foo', 0, -1, self.expect(['ab']))
         self.client.lrange('bar', 0, -1, self.expect(['cd']))
-        self.client.brpoplpush('foo', 'bar', callbacks=[self.expect('ab'), self.finish])
+        self.client.brpoplpush('foo', 'bar', callback=[self.expect('ab'), self.finish])
         self.client.llen('foo', self.expect(0))
         self.client.lrange('bar', 0, -1, [self.expect(['ab', 'cd']), self.finish])
         self.start()
@@ -368,42 +368,42 @@ class ServerCommandsTestCase(TornadoTestCase):
 
         # ZINTERSTORE
         # sum, no weight
-        self.client.zinterstore('z', ['a', 'b', 'c'], callbacks=self.expect(2))
-        self.client.zrange('z', 0, -1, with_scores=True, callbacks=self.expect([('a3', 8),
+        self.client.zinterstore('z', ['a', 'b', 'c'], callback=self.expect(2))
+        self.client.zrange('z', 0, -1, with_scores=True, callback=self.expect([('a3', 8),
                                                                                 ('a1', 9),
                                                                                 ]))
         # max, no weight
-        self.client.zinterstore('z', ['a', 'b', 'c'], aggregate='MAX', callbacks=self.expect(2))
-        self.client.zrange('z', 0, -1, with_scores=True, callbacks=self.expect([('a3', 5),
+        self.client.zinterstore('z', ['a', 'b', 'c'], aggregate='MAX', callback=self.expect(2))
+        self.client.zrange('z', 0, -1, with_scores=True, callback=self.expect([('a3', 5),
                                                                                 ('a1', 6),
                                                                                 ]))
         # with weight
-        self.client.zinterstore('z', {'a': 1, 'b': 2, 'c': 3}, callbacks=self.expect(2))
-        self.client.zrange('z', 0, -1, with_scores=True, callbacks=[self.expect([('a3', 20),
+        self.client.zinterstore('z', {'a': 1, 'b': 2, 'c': 3}, callback=self.expect(2))
+        self.client.zrange('z', 0, -1, with_scores=True, callback=[self.expect([('a3', 20),
                                                                                  ('a1', 23),
                                                                                  ]),
                                                                     self.finish()])
 
         # ZUNIONSTORE
         # sum, no weight
-        self.client.zunionstore('z', ['a', 'b', 'c'], callbacks=self.expect(5))
-        self.client.zrange('z', 0, -1, with_scores=True, callbacks=self.expect([('a2', 1),
+        self.client.zunionstore('z', ['a', 'b', 'c'], callback=self.expect(5))
+        self.client.zrange('z', 0, -1, with_scores=True, callback=self.expect([('a2', 1),
                                                                                 ('a3', 3),
                                                                                 ('a5', 4),
                                                                                 ('a4', 7),
                                                                                 ('a1', 9),
                                                                                 ]))
         # max, no weight
-        self.client.zunionstore('z', ['a', 'b', 'c'], aggregate='MAX', callbacks=self.expect(5))
-        self.client.zrange('z', 0, -1, with_scores=True, callbacks=self.expect([('a2', 1),
+        self.client.zunionstore('z', ['a', 'b', 'c'], aggregate='MAX', callback=self.expect(5))
+        self.client.zrange('z', 0, -1, with_scores=True, callback=self.expect([('a2', 1),
                                                                                 ('a3', 2),
                                                                                 ('a5', 4),
                                                                                 ('a4', 5),
                                                                                 ('a1', 6),
                                                                                 ]))
         # with weight
-        self.client.zunionstore('z', {'a': 1, 'b': 2, 'c': 3}, callbacks=self.expect(5))
-        self.client.zrange('z', 0, -1, with_scores=True, callbacks=[self.expect([('a2', 1),
+        self.client.zunionstore('z', {'a': 1, 'b': 2, 'c': 3}, callback=self.expect(5))
+        self.client.zrange('z', 0, -1, with_scores=True, callback=[self.expect([('a2', 1),
                                                                                  ('a3', 5),
                                                                                  ('a5', 12),
                                                                                  ('a4', 19),
@@ -418,41 +418,41 @@ class ServerCommandsTestCase(TornadoTestCase):
         long_list = map(str, xrange(0, NUM))
         for i in long_list:
             self.client.zadd('foobar', i, i, self.expect(1))
-        self.client.zrange('foobar', 0, NUM, with_scores=False, callbacks=[self.expect(long_list),  self.finish])
+        self.client.zrange('foobar', 0, NUM, with_scores=False, callback=[self.expect(long_list),  self.finish])
         self.start()
 
     def test_sort(self):
         def make_list(key, items, expect_value=True):
-            self.client.delete(key, callbacks=self.expect(expect_value))
+            self.client.delete(key, callback=self.expect(expect_value))
             for i in items:
                 self.client.rpush(key, i)
-        self.client.sort('a', callbacks=self.expect([]))
+        self.client.sort('a', callback=self.expect([]))
         make_list('a', '3214', False)
-        self.client.sort('a', callbacks=self.expect(['1', '2', '3', '4']))
-        self.client.sort('a', start=1, num=2, callbacks=self.expect(['2', '3']))
+        self.client.sort('a', callback=self.expect(['1', '2', '3', '4']))
+        self.client.sort('a', start=1, num=2, callback=self.expect(['2', '3']))
 
-        self.client.set('score:1', 8, callbacks=self.expect(True))
-        self.client.set('score:2', 3, callbacks=self.expect(True))
-        self.client.set('score:3', 5, callbacks=self.expect(True))
+        self.client.set('score:1', 8, callback=self.expect(True))
+        self.client.set('score:2', 3, callback=self.expect(True))
+        self.client.set('score:3', 5, callback=self.expect(True))
         make_list('a_values', '123')
-        self.client.sort('a_values', by='score:*', callbacks=self.expect(['2', '3', '1']))
+        self.client.sort('a_values', by='score:*', callback=self.expect(['2', '3', '1']))
 
-        self.client.set('user:1', 'u1', callbacks=self.expect(True))
-        self.client.set('user:2', 'u2', callbacks=self.expect(True))
-        self.client.set('user:3', 'u3', callbacks=self.expect(True))
-
-        make_list('a', '231')
-        self.client.sort('a', get='user:*', callbacks=self.expect(['u1', 'u2', 'u3']))
+        self.client.set('user:1', 'u1', callback=self.expect(True))
+        self.client.set('user:2', 'u2', callback=self.expect(True))
+        self.client.set('user:3', 'u3', callback=self.expect(True))
 
         make_list('a', '231')
-        self.client.sort('a', desc=True, callbacks=self.expect(['3', '2', '1']))
+        self.client.sort('a', get='user:*', callback=self.expect(['u1', 'u2', 'u3']))
+
+        make_list('a', '231')
+        self.client.sort('a', desc=True, callback=self.expect(['3', '2', '1']))
 
         make_list('a', 'ecdba')
-        self.client.sort('a', alpha=True, callbacks=self.expect(['a', 'b', 'c', 'd', 'e']))
+        self.client.sort('a', alpha=True, callback=self.expect(['a', 'b', 'c', 'd', 'e']))
 
         make_list('a', '231')
-        self.client.sort('a', store='sorted_values', callbacks=self.expect(3))
-        self.client.lrange('a', 0, -1, callbacks=self.expect(['1', '2', '3']))
+        self.client.sort('a', store='sorted_values', callback=self.expect(3))
+        self.client.lrange('a', 0, -1, callback=self.expect(['1', '2', '3']))
 
         self.client.set('user:1:username', 'zeus')
         self.client.set('user:2:username', 'titan')
@@ -479,8 +479,8 @@ class ServerCommandsTestCase(TornadoTestCase):
                          desc=True,
                          alpha=True,
                          store='sorted',
-                         callbacks=self.expect(4))
-        self.client.lrange('sorted', 0, -1, callbacks=[self.expect(['vodka',
+                         callback=self.expect(4))
+        self.client.lrange('sorted', 0, -1, callback=[self.expect(['vodka',
                                                                     'milk',
                                                                     'gin',
                                                                     'apple juice',
@@ -585,7 +585,7 @@ class PipelineTestCase(TornadoTestCase):
         self.client.set('foo', 'bar', self.expect(True))
         self.client.watch('foo', self.expect(True))
         self.client.set('foo', 'zar', self.expect(True))
-        self.client.unwatch(callbacks=self.expect(True))
+        self.client.unwatch(callback=self.expect(True))
         pipe = self.client.pipeline(transactional=True)
         pipe.get('foo')
         pipe.execute([self.pexpect(['zar']), self.finish])

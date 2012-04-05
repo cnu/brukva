@@ -415,13 +415,13 @@ class Client(object):
             cb(*args, **kwargs)
 
     @process
-    def execute_command(self, cmd, callbacks, *args, **kwargs):
+    def execute_command(self, cmd, callback, *args, **kwargs):
         cmd_line = CmdLine(cmd, *args, **kwargs)
-        with execution_context(callbacks) as ctx:
-            if callbacks is None:
-                callbacks = []
-            elif not hasattr(callbacks, '__iter__'):
-                callbacks = [callbacks]
+        with execution_context(callback) as ctx:
+            if callback is None:
+                callback = []
+            elif not hasattr(callback, '__iter__'):
+                callback = [callback]
 
             if self.subscribed and cmd not in PUB_SUB_COMMANDS:
                 ctx.ret_call(RequestError('Calling not pub/sub command during subscribed state', cmd_line))
@@ -434,7 +434,7 @@ class Client(object):
                 raise e
 
             if self.subscribed and cmd in ('SUBSCRIBE', 'UNSUBSCRIBE'):
-                self._waiting_callbacks[cmd].append(callbacks)
+                self._waiting_callbacks[cmd].append(callback)
                 return
 
             yield self.connection.queue_wait()
@@ -513,109 +513,109 @@ class Client(object):
         ####
 
     ### MAINTENANCE
-    def bgrewriteaof(self, callbacks=None):
-        self.execute_command('BGREWRITEAOF', callbacks)
+    def bgrewriteaof(self, callback=None):
+        self.execute_command('BGREWRITEAOF', callback)
 
-    def dbsize(self, callbacks=None):
-        self.execute_command('DBSIZE', callbacks)
+    def dbsize(self, callback=None):
+        self.execute_command('DBSIZE', callback)
 
-    def flushall(self, callbacks=None):
-        self.execute_command('FLUSHALL', callbacks)
+    def flushall(self, callback=None):
+        self.execute_command('FLUSHALL', callback)
 
-    def flushdb(self, callbacks=None):
-        self.execute_command('FLUSHDB', callbacks)
+    def flushdb(self, callback=None):
+        self.execute_command('FLUSHDB', callback)
 
-    def ping(self, callbacks=None):
-        self.execute_command('PING', callbacks)
+    def ping(self, callback=None):
+        self.execute_command('PING', callback)
 
-    def info(self, callbacks=None):
-        self.execute_command('INFO', callbacks)
+    def info(self, callback=None):
+        self.execute_command('INFO', callback)
 
-    def select(self, db, callbacks=None):
+    def select(self, db, callback=None):
         self.selected_db = db
-        self.execute_command('SELECT', callbacks, db)
+        self.execute_command('SELECT', callback, db)
 
-    def shutdown(self, callbacks=None):
-        self.execute_command('SHUTDOWN', callbacks)
+    def shutdown(self, callback=None):
+        self.execute_command('SHUTDOWN', callback)
 
-    def save(self, callbacks=None):
-        self.execute_command('SAVE', callbacks)
+    def save(self, callback=None):
+        self.execute_command('SAVE', callback)
 
-    def bgsave(self, callbacks=None):
-        self.execute_command('BGSAVE', callbacks)
+    def bgsave(self, callback=None):
+        self.execute_command('BGSAVE', callback)
 
-    def lastsave(self, callbacks=None):
-        self.execute_command('LASTSAVE', callbacks)
+    def lastsave(self, callback=None):
+        self.execute_command('LASTSAVE', callback)
 
-    def keys(self, pattern, callbacks=None):
-        self.execute_command('KEYS', callbacks, pattern)
+    def keys(self, pattern, callback=None):
+        self.execute_command('KEYS', callback, pattern)
 
-    def auth(self, password, callbacks=None):
-        self.execute_command('AUTH', callbacks, password)
+    def auth(self, password, callback=None):
+        self.execute_command('AUTH', callback, password)
 
     ### BASIC KEY COMMANDS
-    def append(self, key, value, callbacks=None):
-        self.execute_command('APPEND', callbacks, key, value)
+    def append(self, key, value, callback=None):
+        self.execute_command('APPEND', callback, key, value)
 
-    def expire(self, key, ttl, callbacks=None):
-        self.execute_command('EXPIRE', callbacks, key, ttl)
+    def expire(self, key, ttl, callback=None):
+        self.execute_command('EXPIRE', callback, key, ttl)
 
-    def ttl(self, key, callbacks=None):
-        self.execute_command('TTL', callbacks, key)
+    def ttl(self, key, callback=None):
+        self.execute_command('TTL', callback, key)
 
-    def type(self, key, callbacks=None):
-        self.execute_command('TYPE', callbacks, key)
+    def type(self, key, callback=None):
+        self.execute_command('TYPE', callback, key)
 
-    def randomkey(self, callbacks=None):
-        self.execute_command('RANDOMKEY', callbacks)
+    def randomkey(self, callback=None):
+        self.execute_command('RANDOMKEY', callback)
 
-    def rename(self, src, dst, callbacks=None):
-        self.execute_command('RENAME', callbacks, src, dst)
+    def rename(self, src, dst, callback=None):
+        self.execute_command('RENAME', callback, src, dst)
 
-    def renamenx(self, src, dst, callbacks=None):
-        self.execute_command('RENAMENX', callbacks, src, dst)
+    def renamenx(self, src, dst, callback=None):
+        self.execute_command('RENAMENX', callback, src, dst)
 
-    def move(self, key, db, callbacks=None):
-        self.execute_command('MOVE', callbacks, key, db)
+    def move(self, key, db, callback=None):
+        self.execute_command('MOVE', callback, key, db)
 
-    def substr(self, key, start, end, callbacks=None):
-        self.execute_command('SUBSTR', callbacks, key, start, end)
+    def substr(self, key, start, end, callback=None):
+        self.execute_command('SUBSTR', callback, key, start, end)
 
-    def delete(self, key, callbacks=None):
-        self.execute_command('DEL', callbacks, key)
+    def delete(self, key, callback=None):
+        self.execute_command('DEL', callback, key)
 
-    def set(self, key, value, callbacks=None):
-        self.execute_command('SET', callbacks, key, value)
+    def set(self, key, value, callback=None):
+        self.execute_command('SET', callback, key, value)
 
-    def setex(self, key, ttl, value, callbacks=None):
-        self.execute_command('SETEX', callbacks, key, ttl, value)
+    def setex(self, key, ttl, value, callback=None):
+        self.execute_command('SETEX', callback, key, ttl, value)
 
-    def setnx(self, key, value, callbacks=None):
-        self.execute_command('SETNX', callbacks, key, value)
+    def setnx(self, key, value, callback=None):
+        self.execute_command('SETNX', callback, key, value)
 
-    def mset(self, mapping, callbacks=None):
+    def mset(self, mapping, callback=None):
         items = []
         [ items.extend(pair) for pair in mapping.iteritems() ]
-        self.execute_command('MSET', callbacks, *items)
+        self.execute_command('MSET', callback, *items)
 
-    def msetnx(self, mapping, callbacks=None):
+    def msetnx(self, mapping, callback=None):
         items = []
         [ items.extend(pair) for pair in mapping.iteritems() ]
-        self.execute_command('MSETNX', callbacks, *items)
+        self.execute_command('MSETNX', callback, *items)
 
-    def get(self, key, callbacks=None):
-        self.execute_command('GET', callbacks, key)
+    def get(self, key, callback=None):
+        self.execute_command('GET', callback, key)
 
-    def mget(self, keys, callbacks=None):
-        self.execute_command('MGET', callbacks, *keys)
+    def mget(self, keys, callback=None):
+        self.execute_command('MGET', callback, *keys)
 
-    def getset(self, key, value, callbacks=None):
-        self.execute_command('GETSET', callbacks, key, value)
+    def getset(self, key, value, callback=None):
+        self.execute_command('GETSET', callback, key, value)
 
-    def exists(self, key, callbacks=None):
-        self.execute_command('EXISTS', callbacks, key)
+    def exists(self, key, callback=None):
+        self.execute_command('EXISTS', callback, key)
 
-    def sort(self, key, start=None, num=None, by=None, get=None, desc=False, alpha=False, store=None, callbacks=None):
+    def sort(self, key, start=None, num=None, by=None, get=None, desc=False, alpha=False, store=None, callback=None):
         if (start is not None and num is None) or (num is not None and start is None):
             raise ValueError("``start`` and ``num`` must both be specified")
 
@@ -637,132 +637,132 @@ class Client(object):
         if store is not None:
             tokens.append('STORE')
             tokens.append(store)
-        return self.execute_command('SORT', callbacks, *tokens)
+        return self.execute_command('SORT', callback, *tokens)
 
     ### COUNTERS COMMANDS
-    def incr(self, key, callbacks=None):
-        self.execute_command('INCR', callbacks, key)
+    def incr(self, key, callback=None):
+        self.execute_command('INCR', callback, key)
 
-    def decr(self, key, callbacks=None):
-        self.execute_command('DECR', callbacks, key)
+    def decr(self, key, callback=None):
+        self.execute_command('DECR', callback, key)
 
-    def incrby(self, key, amount, callbacks=None):
-        self.execute_command('INCRBY', callbacks, key, amount)
+    def incrby(self, key, amount, callback=None):
+        self.execute_command('INCRBY', callback, key, amount)
 
-    def decrby(self, key, amount, callbacks=None):
-        self.execute_command('DECRBY', callbacks, key, amount)
+    def decrby(self, key, amount, callback=None):
+        self.execute_command('DECRBY', callback, key, amount)
 
     ### LIST COMMANDS
-    def blpop(self, keys, timeout=0, callbacks=None):
+    def blpop(self, keys, timeout=0, callback=None):
         tokens = list(keys)
         tokens.append(timeout)
-        self.execute_command('BLPOP', callbacks, *tokens)
+        self.execute_command('BLPOP', callback, *tokens)
 
-    def brpop(self, keys, timeout=0, callbacks=None):
+    def brpop(self, keys, timeout=0, callback=None):
         tokens = list(keys)
         tokens.append(timeout)
-        self.execute_command('BRPOP', callbacks, *tokens)
+        self.execute_command('BRPOP', callback, *tokens)
 
-    def brpoplpush(self, src, dst, timeout=1, callbacks=None):
+    def brpoplpush(self, src, dst, timeout=1, callback=None):
         tokens = [src, dst, timeout]
-        self.execute_command('BRPOPLPUSH', callbacks, *tokens)
+        self.execute_command('BRPOPLPUSH', callback, *tokens)
 
-    def lindex(self, key, index, callbacks=None):
-        self.execute_command('LINDEX', callbacks, key, index)
+    def lindex(self, key, index, callback=None):
+        self.execute_command('LINDEX', callback, key, index)
 
-    def llen(self, key, callbacks=None):
-        self.execute_command('LLEN', callbacks, key)
+    def llen(self, key, callback=None):
+        self.execute_command('LLEN', callback, key)
 
-    def lrange(self, key, start, end, callbacks=None):
-        self.execute_command('LRANGE', callbacks, key, start, end)
+    def lrange(self, key, start, end, callback=None):
+        self.execute_command('LRANGE', callback, key, start, end)
 
-    def lrem(self, key, value, num=0, callbacks=None):
-        self.execute_command('LREM', callbacks, key, num, value)
+    def lrem(self, key, value, num=0, callback=None):
+        self.execute_command('LREM', callback, key, num, value)
 
-    def lset(self, key, index, value, callbacks=None):
-        self.execute_command('LSET', callbacks, key, index, value)
+    def lset(self, key, index, value, callback=None):
+        self.execute_command('LSET', callback, key, index, value)
 
-    def ltrim(self, key, start, end, callbacks=None):
-        self.execute_command('LTRIM', callbacks, key, start, end)
+    def ltrim(self, key, start, end, callback=None):
+        self.execute_command('LTRIM', callback, key, start, end)
 
-    def lpush(self, key, value, callbacks=None):
-        self.execute_command('LPUSH', callbacks, key, value)
+    def lpush(self, key, value, callback=None):
+        self.execute_command('LPUSH', callback, key, value)
 
-    def rpush(self, key, value, callbacks=None):
-        self.execute_command('RPUSH', callbacks, key, value)
+    def rpush(self, key, value, callback=None):
+        self.execute_command('RPUSH', callback, key, value)
 
-    def lpop(self, key, callbacks=None):
-        self.execute_command('LPOP', callbacks, key)
+    def lpop(self, key, callback=None):
+        self.execute_command('LPOP', callback, key)
 
-    def rpop(self, key, callbacks=None):
-        self.execute_command('RPOP', callbacks, key)
+    def rpop(self, key, callback=None):
+        self.execute_command('RPOP', callback, key)
 
-    def rpoplpush(self, src, dst, callbacks=None):
-        self.execute_command('RPOPLPUSH', callbacks, src, dst)
+    def rpoplpush(self, src, dst, callback=None):
+        self.execute_command('RPOPLPUSH', callback, src, dst)
 
     ### SET COMMANDS
-    def sadd(self, key, value, callbacks=None):
-        self.execute_command('SADD', callbacks, key, value)
+    def sadd(self, key, value, callback=None):
+        self.execute_command('SADD', callback, key, value)
 
-    def srem(self, key, value, callbacks=None):
-        self.execute_command('SREM', callbacks, key, value)
+    def srem(self, key, value, callback=None):
+        self.execute_command('SREM', callback, key, value)
 
-    def scard(self, key, callbacks=None):
-        self.execute_command('SCARD', callbacks, key)
+    def scard(self, key, callback=None):
+        self.execute_command('SCARD', callback, key)
 
-    def spop(self, key, callbacks=None):
-        self.execute_command('SPOP', callbacks, key)
+    def spop(self, key, callback=None):
+        self.execute_command('SPOP', callback, key)
 
-    def smove(self, src, dst, value, callbacks=None):
-        self.execute_command('SMOVE', callbacks, src, dst, value)
+    def smove(self, src, dst, value, callback=None):
+        self.execute_command('SMOVE', callback, src, dst, value)
 
-    def sismember(self, key, value, callbacks=None):
-        self.execute_command('SISMEMBER', callbacks, key, value)
+    def sismember(self, key, value, callback=None):
+        self.execute_command('SISMEMBER', callback, key, value)
 
-    def smembers(self, key, callbacks=None):
-        self.execute_command('SMEMBERS', callbacks, key)
+    def smembers(self, key, callback=None):
+        self.execute_command('SMEMBERS', callback, key)
 
-    def srandmember(self, key, callbacks=None):
-        self.execute_command('SRANDMEMBER', callbacks, key)
+    def srandmember(self, key, callback=None):
+        self.execute_command('SRANDMEMBER', callback, key)
 
-    def sinter(self, keys, callbacks=None):
-        self.execute_command('SINTER', callbacks, *keys)
+    def sinter(self, keys, callback=None):
+        self.execute_command('SINTER', callback, *keys)
 
-    def sdiff(self, keys, callbacks=None):
-        self.execute_command('SDIFF', callbacks, *keys)
+    def sdiff(self, keys, callback=None):
+        self.execute_command('SDIFF', callback, *keys)
 
-    def sunion(self, keys, callbacks=None):
-        self.execute_command('SUNION', callbacks, *keys)
+    def sunion(self, keys, callback=None):
+        self.execute_command('SUNION', callback, *keys)
 
-    def sinterstore(self, keys, dst, callbacks=None):
-        self.execute_command('SINTERSTORE', callbacks, dst, *keys)
+    def sinterstore(self, keys, dst, callback=None):
+        self.execute_command('SINTERSTORE', callback, dst, *keys)
 
-    def sunionstore(self, keys, dst, callbacks=None):
-        self.execute_command('SUNIONSTORE', callbacks, dst, *keys)
+    def sunionstore(self, keys, dst, callback=None):
+        self.execute_command('SUNIONSTORE', callback, dst, *keys)
 
-    def sdiffstore(self, keys, dst, callbacks=None):
-        self.execute_command('SDIFFSTORE', callbacks, dst, *keys)
+    def sdiffstore(self, keys, dst, callback=None):
+        self.execute_command('SDIFFSTORE', callback, dst, *keys)
 
     ### SORTED SET COMMANDS
-    def zadd(self, key, score, value, callbacks=None):
-        self.execute_command('ZADD', callbacks, key, score, value)
+    def zadd(self, key, score, value, callback=None):
+        self.execute_command('ZADD', callback, key, score, value)
 
-    def zcard(self, key, callbacks=None):
-        self.execute_command('ZCARD', callbacks, key)
+    def zcard(self, key, callback=None):
+        self.execute_command('ZCARD', callback, key)
 
-    def zincrby(self, key, value, amount, callbacks=None):
-        self.execute_command('ZINCRBY', callbacks, key, amount, value)
+    def zincrby(self, key, value, amount, callback=None):
+        self.execute_command('ZINCRBY', callback, key, amount, value)
 
-    def zrank(self, key, value, callbacks=None):
-        self.execute_command('ZRANK', callbacks, key, value)
+    def zrank(self, key, value, callback=None):
+        self.execute_command('ZRANK', callback, key, value)
 
-    def zrevrank(self, key, value, callbacks=None):
-        self.execute_command('ZREVRANK', callbacks, key, value)
+    def zrevrank(self, key, value, callback=None):
+        self.execute_command('ZREVRANK', callback, key, value)
 
-    def zrem(self, key, value, callbacks=None):
-        self.execute_command('ZREM', callbacks, key, value)
+    def zrem(self, key, value, callback=None):
+        self.execute_command('ZREM', callback, key, value)
 
-    def zcount(self, key, start, end, offset=None, limit=None, with_scores=None, callbacks=None):
+    def zcount(self, key, start, end, offset=None, limit=None, with_scores=None, callback=None):
         tokens = [key, start, end]
         if offset is not None:
             tokens.append('LIMIT')
@@ -770,27 +770,27 @@ class Client(object):
             tokens.append(limit)
         if with_scores:
             tokens.append('WITHSCORES')
-        self.execute_command('ZCOUNT', callbacks, *tokens)
+        self.execute_command('ZCOUNT', callback, *tokens)
 
-    def zcard(self, key, callbacks=None):
-        self.execute_command('ZCARD', callbacks, key)
+    def zcard(self, key, callback=None):
+        self.execute_command('ZCARD', callback, key)
 
-    def zscore(self, key, value, callbacks=None):
-        self.execute_command('ZSCORE', callbacks, key, value)
+    def zscore(self, key, value, callback=None):
+        self.execute_command('ZSCORE', callback, key, value)
 
-    def zrange(self, key, start, num, with_scores, callbacks=None):
+    def zrange(self, key, start, num, with_scores, callback=None):
         tokens = [key, start, num]
         if with_scores:
             tokens.append('WITHSCORES')
-        self.execute_command('ZRANGE', callbacks, *tokens)
+        self.execute_command('ZRANGE', callback, *tokens)
 
-    def zrevrange(self, key, start, num, with_scores, callbacks=None):
+    def zrevrange(self, key, start, num, with_scores, callback=None):
         tokens = [key, start, num]
         if with_scores:
             tokens.append('WITHSCORES')
-        self.execute_command('ZREVRANGE', callbacks, *tokens)
+        self.execute_command('ZREVRANGE', callback, *tokens)
 
-    def zrangebyscore(self, key, start, end, offset=None, limit=None, with_scores=False, callbacks=None):
+    def zrangebyscore(self, key, start, end, offset=None, limit=None, with_scores=False, callback=None):
         tokens = [key, start, end]
         if offset is not None:
             tokens.append('LIMIT')
@@ -798,21 +798,21 @@ class Client(object):
             tokens.append(limit)
         if with_scores:
             tokens.append('WITHSCORES')
-        self.execute_command('ZRANGEBYSCORE', callbacks, *tokens)
+        self.execute_command('ZRANGEBYSCORE', callback, *tokens)
 
-    def zremrangebyrank(self, key, start, end, callbacks=None):
-        self.execute_command('ZREMRANGEBYRANK', callbacks, key, start, end)
+    def zremrangebyrank(self, key, start, end, callback=None):
+        self.execute_command('ZREMRANGEBYRANK', callback, key, start, end)
 
-    def zremrangebyscore(self, key, start, end, callbacks=None):
-        self.execute_command('ZREMRANGEBYSCORE', callbacks, key, start, end)
+    def zremrangebyscore(self, key, start, end, callback=None):
+        self.execute_command('ZREMRANGEBYSCORE', callback, key, start, end)
 
-    def zinterstore(self, dest, keys, aggregate=None, callbacks=None):
-        return self._zaggregate('ZINTERSTORE', dest, keys, aggregate, callbacks)
+    def zinterstore(self, dest, keys, aggregate=None, callback=None):
+        return self._zaggregate('ZINTERSTORE', dest, keys, aggregate, callback)
 
-    def zunionstore(self, dest, keys, aggregate=None, callbacks=None):
-        return self._zaggregate('ZUNIONSTORE', dest, keys, aggregate, callbacks)
+    def zunionstore(self, dest, keys, aggregate=None, callback=None):
+        return self._zaggregate('ZUNIONSTORE', dest, keys, aggregate, callback)
 
-    def _zaggregate(self, command, dest, keys, aggregate, callbacks):
+    def _zaggregate(self, command, dest, keys, aggregate, callback):
         tokens = [dest, len(keys)]
         if isinstance(keys, dict):
             items = keys.items()
@@ -827,87 +827,87 @@ class Client(object):
         if aggregate:
             tokens.append('AGGREGATE')
             tokens.append(aggregate)
-        return self.execute_command(command, callbacks, *tokens)
+        return self.execute_command(command, callback, *tokens)
 
     ### HASH COMMANDS
-    def hgetall(self, key, callbacks=None):
-        self.execute_command('HGETALL', callbacks, key)
+    def hgetall(self, key, callback=None):
+        self.execute_command('HGETALL', callback, key)
 
-    def hmset(self, key, mapping, callbacks=None):
+    def hmset(self, key, mapping, callback=None):
         items = []
         [ items.extend(pair) for pair in mapping.iteritems() ]
-        self.execute_command('HMSET', callbacks, key, *items)
+        self.execute_command('HMSET', callback, key, *items)
 
-    def hset(self, key, field, value, callbacks=None):
-        self.execute_command('HSET', callbacks, key, field, value)
+    def hset(self, key, field, value, callback=None):
+        self.execute_command('HSET', callback, key, field, value)
 
-    def hget(self, key, field, callbacks=None):
-        self.execute_command('HGET', callbacks, key, field)
+    def hget(self, key, field, callback=None):
+        self.execute_command('HGET', callback, key, field)
 
-    def hdel(self, key, field, callbacks=None):
-        self.execute_command('HDEL', callbacks, key, field)
+    def hdel(self, key, field, callback=None):
+        self.execute_command('HDEL', callback, key, field)
 
-    def hlen(self, key, callbacks=None):
-        self.execute_command('HLEN', callbacks, key)
+    def hlen(self, key, callback=None):
+        self.execute_command('HLEN', callback, key)
 
-    def hexists(self, key, field, callbacks=None):
-        self.execute_command('HEXISTS', callbacks, key, field)
+    def hexists(self, key, field, callback=None):
+        self.execute_command('HEXISTS', callback, key, field)
 
-    def hincrby(self, key, field, amount=1, callbacks=None):
-        self.execute_command('HINCRBY', callbacks, key, field, amount)
+    def hincrby(self, key, field, amount=1, callback=None):
+        self.execute_command('HINCRBY', callback, key, field, amount)
 
-    def hkeys(self, key, callbacks=None):
-        self.execute_command('HKEYS', callbacks, key)
+    def hkeys(self, key, callback=None):
+        self.execute_command('HKEYS', callback, key)
 
-    def hmget(self, key, fields, callbacks=None):
-        self.execute_command('HMGET', callbacks, key, *fields)
+    def hmget(self, key, fields, callback=None):
+        self.execute_command('HMGET', callback, key, *fields)
 
-    def hvals(self, key, callbacks=None):
-        self.execute_command('HVALS', callbacks, key)
+    def hvals(self, key, callback=None):
+        self.execute_command('HVALS', callback, key)
 
     ### PUBSUB
-    def subscribe(self, channels, callbacks=None):
-        self._subscribe('SUBSCRIBE', channels, callbacks)
+    def subscribe(self, channels, callback=None):
+        self._subscribe('SUBSCRIBE', channels, callback)
 
-    def psubscribe(self, channels, callbacks=None):
-        self._subscribe('PSUBSCRIBE', channels, callbacks)
+    def psubscribe(self, channels, callback=None):
+        self._subscribe('PSUBSCRIBE', channels, callback)
 
-    def _subscribe(self, cmd, channels, callbacks=None):
-        callbacks = callbacks or []
-        if not isinstance(callbacks, Iterable):
-            callbacks = [callbacks]
+    def _subscribe(self, cmd, channels, callback=None):
+        callback = callback or []
+        if not isinstance(callback, Iterable):
+            callback = [callback]
         if isinstance(channels, basestring):
             channels = [channels]
         if not self.subscribed:
-            callbacks = list(callbacks) + [self.on_subscribed]
-        self.execute_command(cmd, callbacks, *channels)
+            callback = list(callback) + [self.on_subscribed]
+        self.execute_command(cmd, callback, *channels)
 
     def on_subscribed(self, result):
         self.subscribed = True
 
-    def unsubscribe(self, channels, callbacks=None):
-        self._unsubscribe('UNSUBSCRIBE', channels, callbacks)
+    def unsubscribe(self, channels, callback=None):
+        self._unsubscribe('UNSUBSCRIBE', channels, callback)
 
-    def punsubscribe(self, channels, callbacks=None):
-        self._unsubscribe('UNSUBSCRIBE', channels, callbacks)
+    def punsubscribe(self, channels, callback=None):
+        self._unsubscribe('UNSUBSCRIBE', channels, callback)
 
-    def _unsubscribe(self, cmd, channels, callbacks=None):
-        callbacks = callbacks or []
-        if not isinstance(callbacks, Iterable):
-            callbacks = [callbacks]
+    def _unsubscribe(self, cmd, channels, callback=None):
+        callback = callback or []
+        if not isinstance(callback, Iterable):
+            callback = [callback]
         if isinstance(channels, basestring):
             channels = [channels]
-        callbacks = list(callbacks)
-        self.execute_command(cmd, callbacks, *channels)
+        callback = list(callback)
+        self.execute_command(cmd, callback, *channels)
 
     def on_unsubscribed(self, *args, **kwargs):
         self.subscribed = False
 
-    def publish(self, channel, message, callbacks=None):
-        self.execute_command('PUBLISH', callbacks, channel, message)
+    def publish(self, channel, message, callback=None):
+        self.execute_command('PUBLISH', callback, channel, message)
 
     @process
-    def listen(self, callbacks=None):
+    def listen(self, callback=None):
         # 'LISTEN' is just for receiving information, it is not actually sent anywhere
         def error_wrapper(e):
             if isinstance(e, GeneratorExit):
@@ -915,10 +915,10 @@ class Client(object):
             else:
                 return e
 
-        with execution_context(callbacks, error_wrapper) as ctx:
-            callbacks = callbacks or []
-            if not hasattr(callbacks, '__iter__'):
-                callbacks = [callbacks]
+        with execution_context(callback, error_wrapper) as ctx:
+            callback = callback or []
+            if not hasattr(callback, '__iter__'):
+                callback = [callback]
             yield self.connection.queue_wait()
 
             cmd_listen = CmdLine('LISTEN')
@@ -946,11 +946,11 @@ class Client(object):
                     ctx.ret_call(result)
 
     ### CAS
-    def watch(self, key, callbacks=None):
-        self.execute_command('WATCH', callbacks, key)
+    def watch(self, key, callback=None):
+        self.execute_command('WATCH', callback, key)
 
-    def unwatch(self, callbacks=None):
-        self.execute_command('UNWATCH', callbacks)
+    def unwatch(self, callback=None):
+        self.execute_command('UNWATCH', callback)
 
 class Pipeline(Client):
     def __init__(self, transactional, *args, **kwargs):
@@ -958,9 +958,9 @@ class Pipeline(Client):
         self.transactional = transactional
         self.command_stack = []
 
-    def execute_command(self, cmd, callbacks, *args, **kwargs):
+    def execute_command(self, cmd, callback, *args, **kwargs):
         if cmd in ('AUTH', 'SELECT'):
-            super(Pipeline, self).execute_command(cmd, callbacks, *args, **kwargs)
+            super(Pipeline, self).execute_command(cmd, callback, *args, **kwargs)
         elif cmd in PUB_SUB_COMMANDS:
             raise RequestError(
                 'Client is not supposed to issue command %s in pipeline' % cmd)
@@ -970,15 +970,15 @@ class Pipeline(Client):
         self.command_stack = []
 
     @process
-    def execute(self, callbacks):
-        with execution_context(callbacks) as ctx:
+    def execute(self, callback):
+        with execution_context(callback) as ctx:
             command_stack = self.command_stack
             self.command_stack = []
 
-            if callbacks is None:
-                callbacks = []
-            elif not hasattr(callbacks, '__iter__'):
-                callbacks = [callbacks]
+            if callback is None:
+                callback = []
+            elif not hasattr(callback, '__iter__'):
+                callback = [callback]
 
             if self.transactional:
                 command_stack = [CmdLine('MULTI')] + command_stack + [CmdLine('EXEC')]
